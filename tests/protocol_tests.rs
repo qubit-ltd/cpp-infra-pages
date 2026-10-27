@@ -58,8 +58,7 @@ fn evidence(project: &Path, context: &Value, evidence: &Value, kind: &str) -> Ou
     let bytes = serde_json::to_vec(evidence).expect("evidence JSON");
     fs::write(&path, &bytes).expect("evidence");
     let mut context = context.clone();
-    context["artifacts"] =
-        json!([{"kind":kind,"path":path,"sha256":format!("{:x}",Sha256::digest(bytes)),"required":true}]);
+    context["artifacts"] = json!([{"kind":kind,"path":path,"sha256":Sha256::digest(bytes).iter().map(|byte| format!("{byte:02x}")).collect::<String>(),"required":true}]);
     fs::write(
         project.join("build/context.json"),
         serde_json::to_vec(&context).expect("context JSON"),

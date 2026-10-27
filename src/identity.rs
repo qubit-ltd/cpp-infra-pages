@@ -39,7 +39,7 @@ pub(crate) fn files(root: &Path) -> Result<Vec<PathBuf>, PagesError> {
     Ok(paths)
 }
 pub(crate) fn sha(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    Sha256::digest(bytes).iter().map(|byte| format!("{byte:02x}")).collect()
 }
 pub(crate) fn digest_files(root: &Path, paths: &[PathBuf]) -> Result<String, PagesError> {
     let mut hash = Sha256::new();
@@ -54,7 +54,7 @@ pub(crate) fn digest_files(root: &Path, paths: &[PathBuf]) -> Result<String, Pag
         hash.update((bytes.len() as u64).to_le_bytes());
         hash.update(bytes);
     }
-    Ok(format!("{:x}", hash.finalize()))
+    Ok(hash.finalize().iter().map(|byte| format!("{byte:02x}")).collect())
 }
 pub(crate) fn artifact_digest(path: &Path) -> Result<String, PagesError> {
     if path.is_dir() {

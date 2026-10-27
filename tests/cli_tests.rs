@@ -459,7 +459,10 @@ fn digest_tree(path: &Path) -> String {
         hash.update((bytes.len() as u64).to_le_bytes());
         hash.update(bytes);
     }
-    format!("{:x}", hash.finalize())
+    hash.finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>()
 }
 #[test]
 fn test_coverage_input_identity_html_hash_and_badge() {
@@ -576,12 +579,17 @@ fn test_runtime_snapshot_authenticates_bundle_and_current_executable() {
             .stdout,
     )
     .expect("version json");
-    let snapshot = serde_json::json!({"schema":1,"bundle_id":"development","tools":[{"name":"cpp-infra-pages","version":version["version"],"revision":version["revision"],"protocol":1,"binary":executable,"executable_sha256":format!("{:x}",Sha256::digest(fs::read(executable).expect("exe")))}],"offline":true,"stale":false});
+    let snapshot = serde_json::json!({"schema":1,"bundle_id":"development","tools":[{"name":"cpp-infra-pages","version":version["version"],"revision":version["revision"],"protocol":1,"binary":executable,"executable_sha256":Sha256::digest(fs::read(executable).expect("exe")).iter().map(|byte| format!("{byte:02x}")).collect::<String>()}],"offline":true,"stale":false});
     let path = p.path().join("build/snapshot.json");
     let bytes = serde_json::to_vec(&snapshot).expect("snapshot");
     fs::write(&path, &bytes).expect("snapshot file");
     context["runtime_snapshot"] = serde_json::json!(path);
-    context["runtime_snapshot_digest"] = serde_json::json!(format!("{:x}", Sha256::digest(&bytes)));
+    context["runtime_snapshot_digest"] = serde_json::json!(
+        Sha256::digest(&bytes)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>()
+    );
     let context_path = p.path().join("build/context.json");
     fs::write(&context_path, serde_json::to_vec(&context).expect("context")).expect("context file");
     let invoke = || {
@@ -603,7 +611,12 @@ fn test_runtime_snapshot_authenticates_bundle_and_current_executable() {
     missing["tools"][0]["binary"] = Value::String("/definitely/missing/pages".into());
     let bytes = serde_json::to_vec(&missing).expect("missing snapshot");
     fs::write(&path, &bytes).expect("snapshot");
-    context["runtime_snapshot_digest"] = serde_json::json!(format!("{:x}", Sha256::digest(bytes)));
+    context["runtime_snapshot_digest"] = serde_json::json!(
+        Sha256::digest(bytes)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>()
+    );
     fs::write(&context_path, serde_json::to_vec(&context).expect("context")).expect("context");
     assert_eq!(invoke().status.code(), Some(2), "snapshot.binary must exist");
     for bundle in ["main-not-a-valid-digest".to_owned(), format!("main-{}", "a".repeat(64))] {
@@ -612,7 +625,12 @@ fn test_runtime_snapshot_authenticates_bundle_and_current_executable() {
         context["bundle_id"] = serde_json::json!(bundle);
         let bytes = serde_json::to_vec(&forged).expect("forged");
         fs::write(&path, &bytes).expect("snapshot");
-        context["runtime_snapshot_digest"] = serde_json::json!(format!("{:x}", Sha256::digest(bytes)));
+        context["runtime_snapshot_digest"] = serde_json::json!(
+            Sha256::digest(bytes)
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect::<String>()
+        );
         fs::write(&context_path, serde_json::to_vec(&context).expect("context")).expect("context");
         assert_eq!(
             invoke().status.code(),
@@ -625,7 +643,12 @@ fn test_runtime_snapshot_authenticates_bundle_and_current_executable() {
     wrong["tools"][0]["executable_sha256"] = Value::String("bad-hash".into());
     let bytes = serde_json::to_vec(&wrong).expect("wrong");
     fs::write(&path, &bytes).expect("wrong snapshot");
-    context["runtime_snapshot_digest"] = serde_json::json!(format!("{:x}", Sha256::digest(bytes)));
+    context["runtime_snapshot_digest"] = serde_json::json!(
+        Sha256::digest(bytes)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>()
+    );
     fs::write(&context_path, serde_json::to_vec(&context).expect("wrong context")).expect("context");
     assert_eq!(invoke().status.code(), Some(2));
 }
@@ -680,7 +703,7 @@ fn test_downloaded_coverage_report_uses_portable_relative_artifacts() {
     fs::write(&input, serde_json::to_vec(&coverage).expect("report")).expect("coverage");
     let mut context = initial.clone();
     context["profile"] = Value::String("docs".into());
-    context["artifacts"] = serde_json::json!([{"kind":"coverage-summary","path":input,"sha256":({use sha2::{Digest,Sha256};format!("{:x}",Sha256::digest(fs::read(&input).expect("bytes")))}),"required":true}]);
+    context["artifacts"] = serde_json::json!([{"kind":"coverage-summary","path":input,"sha256":({use sha2::{Digest,Sha256};Sha256::digest(fs::read(&input).expect("bytes")).iter().map(|byte| format!("{byte:02x}")).collect::<String>()}),"required":true}]);
     let path = root.join("context.json");
     fs::write(&path, serde_json::to_vec(&context).expect("context")).expect("context file");
     let output = Command::new(env!("CARGO_BIN_EXE_cpp-infra-pages"))
