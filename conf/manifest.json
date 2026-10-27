@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "owner": "cpp-infra-pages",
+  "files": [
+    {
+      "source": "conf/pages/policy/Doxyfile.in",
+      "target": ".infra/pages/policy/Doxyfile.in",
+      "sha256": "df6585c0dd5b3a6bb28b11c054033fe8f51362e408de5e3c644fbccf14e047fd",
+      "executable": false
+    }
+  ],
+  "project_files": [
+    {
+      "source": "conf/pages/config.example.toml",
+      "target": ".infra/pages/config.toml",
+      "sha256": "4a5f2289d7d75eabddd38e0b0a95af157d385234b9338a59c02ae24d9e01b00c",
+      "executable": false
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+# =============================================================================
+#    Copyright (c) 2026 Haixing Hu.
+#
+#    SPDX-License-Identifier: Apache-2.0
+#
+#    Licensed under the Apache License, Version 2.0.
+# =============================================================================
+schema = 1
+title = "Project documentation"
+default_language = "en"
+base_path = "/"
+
+[languages.en]
+readme = "README.md"
+label = "English"
+
+[api]
+enabled = false
+inputs = []
+warnings_as_errors = true
+timeout_seconds = 120
+
+[reports]
+coverage_required = false
+ci_required = false

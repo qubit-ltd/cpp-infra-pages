@@ -1,0 +1,31 @@
+# =============================================================================
+#    Copyright (c) 2026 Haixing Hu.
+#
+#    SPDX-License-Identifier: Apache-2.0
+#
+#    Licensed under the Apache License, Version 2.0.
+# =============================================================================
+PROJECT_NAME = @TITLE@
+OUTPUT_DIRECTORY = @OUTPUT@
+INPUT = @INPUTS@
+PREDEFINED = @DEFINES@
+GENERATE_HTML = YES
+HTML_OUTPUT = html
+GENERATE_LATEX = NO
+RECURSIVE = YES
+FILE_PATTERNS = *.h *.hpp *.hxx *.hh
+EXTRACT_ALL = NO
+WARNINGS = YES
+WARN_IF_UNDOCUMENTED = YES
+WARN_IF_DOC_ERROR = YES
+WARN_AS_ERROR = @WARNINGS@
+QUIET = YES
+INPUT_FILTER =
+FILTER_PATTERNS =
+FULL_PATH_NAMES = NO
+STRIP_FROM_PATH = @PROJECT@
+HAVE_DOT = NO
+GENERATE_TREEVIEW = NO
+DISABLE_INDEX = NO
+GENERATE_TAGFILE = @TAGFILE@
+EXCLUDE_SYMLINKS = YES
